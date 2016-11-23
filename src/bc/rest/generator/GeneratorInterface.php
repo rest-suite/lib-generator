@@ -2,8 +2,14 @@
 
 namespace bc\rest\generator;
 
-use bc\rest\models\ComponentInterface;
+use bc\rest\components\ComponentInterface;
 
+/**
+ * Interface of basic generator
+ * Pipeline and component based
+ * 
+ * @package bc\rest\generator
+ */
 interface GeneratorInterface {
 
     /**

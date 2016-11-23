@@ -1,7 +1,7 @@
 <?php
 
 
-namespace bc\rest\models;
+namespace bc\rest\components;
 
 
 interface ModelClassInterface extends ComponentInterface {
