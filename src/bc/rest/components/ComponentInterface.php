@@ -2,81 +2,47 @@
 
 namespace bc\rest\components;
 
-use gossi\codegen\model\PhpMethod;
-use gossi\codegen\model\PhpProperty;
-
 /**
  * Base interface for components of generator
- * One component build one class (controller, model, etc.)
- * 
+ *
  * @package bc\rest\models
  */
 interface ComponentInterface {
 
     /**
-     * Get component class name
-     * 
+     * Get component name
+     *
      * @return string
      */
     public function getName();
 
     /**
      * Set component name
-     * 
+     *
      * @param string $name
      */
     public function setName($name);
 
     /**
-     * Get suffix for component full class name
-     * 
+     * Get suffix for component full name
+     *
      * @return string
      */
     public function getSuffix();
 
     /**
-     * Get component class namespace
-     * 
-     * @return string
-     */
-    public function getNamespace();
-
-    /**
-     * Set component class namespace
-     * 
-     * @param string $ns
-     */
-    public function setNamespace($ns);
-
-    /**
-     * Add method to component
-     * 
-     * @param PhpMethod $method
-     */
-    public function addMethod(PhpMethod $method);
-
-    /**
-     * Get component method by name
+     * Generate component with default data
      *
-     * @param string $name
+     * @param array $parts   custom names of parts to generate
+     *                       depends on specific component
+     *                       empty array - generate all parts
+     *                       key - name of part
+     *                       value - mixed. if no named-key - name of part
      *
-     * @return PhpMethod
-     */
-    public function getMethod($name);
-
-    /**
-     * Add property to component
-     * 
-     * @param PhpProperty $property
-     */
-    public function addProperty(PhpProperty $property);
-
-    /**
-     * Get component property by name
-     * 
-     * @param string $name
+     * @param array $options options for default data generation
      *
-     * @return PhpProperty
+     * @return
      */
-    public function getProperty($name);
+    public function createDefaultComponent($parts = [], $options = []);
+
 }
