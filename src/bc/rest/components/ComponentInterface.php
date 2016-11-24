@@ -25,6 +25,7 @@ interface ComponentInterface {
 
     /**
      * Get suffix for component full name
+     * can be empty
      *
      * @return string
      */
@@ -51,5 +52,13 @@ interface ComponentInterface {
      * @return string
      */
     public function getCode();
+
+    /**
+     * Get file extension for component
+     * can be empty
+     * 
+     * @return string
+     */
+    public function getFileExt();
 
 }
