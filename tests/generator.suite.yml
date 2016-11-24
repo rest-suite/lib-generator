@@ -1,0 +1,4 @@
+class_name: GeneratorTester
+modules:
+    enabled:
+        - \bc\rest\tests\Helper\Generator

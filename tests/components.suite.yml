@@ -1,0 +1,4 @@
+class_name: ComponentsTester
+modules:
+    enabled:
+        - \bc\rest\tests\Helper\Components
