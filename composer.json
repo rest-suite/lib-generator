@@ -25,5 +25,13 @@
     "psr-4": {
       "bc\\rest\\": "./src/bc/rest/"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "bc\\rest\\tests\\": [
+        "./tests/",
+        "./tests/_support/"
+      ]
+    }
   }
 }
