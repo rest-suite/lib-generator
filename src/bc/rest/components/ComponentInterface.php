@@ -45,4 +45,11 @@ interface ComponentInterface {
      */
     public function createDefaultComponent($parts = [], $options = []);
 
+    /**
+     * Get generated code for component
+     * 
+     * @return string
+     */
+    public function getCode();
+
 }
