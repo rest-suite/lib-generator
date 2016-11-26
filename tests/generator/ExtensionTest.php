@@ -38,7 +38,7 @@ class ExtensionTest extends Unit {
     protected function setUp() {
         $this->ext = $this->createMock(ExtensionInterface::class);
 
-        $swagger = Yaml::parse(file_get_contents(__DIR__.'/../_data/simple.swagger.yml'));
+        $swagger = Yaml::parse(file_get_contents(__DIR__.'/../_data/simple/swagger.yml'));
         $this->specs = new Swagger($swagger);
 
         return parent::setUp();

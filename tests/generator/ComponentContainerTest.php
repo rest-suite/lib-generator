@@ -3,6 +3,7 @@ namespace bc\rest\tests;
 
 
 use bc\rest\components\ComponentInterface;
+use bc\rest\exceptions\Exception;
 use bc\rest\generator\ComponentContainer;
 use bc\rest\generator\ComponentContainerInterface;
 use Codeception\Test\Unit;
@@ -20,7 +21,7 @@ class ComponentContainerTest extends Unit {
     private $container;
 
     // tests
-    public function testAddAndGetComponents() {
+    public function testAddAndGet() {
         $component = $this->getMockBuilder(ComponentInterface::class)
                           ->getMock();
 
@@ -28,21 +29,18 @@ class ComponentContainerTest extends Unit {
 
         $this->assertInstanceOf(ComponentInterface::class, $this->container->getComponent('test'));
         $this->assertCount(1, $this->container->getComponents());
-        $this->assertArrayHasKey('test', $this->container->getComponents());
+        $this->assertEquals(['test' => $component], $this->container->getComponents());
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testGetNotExists() {
+        $this->container->getComponent('test');
     }
 
     protected function setUp() {
-        $this->container = $this->getMockBuilder(ComponentContainerInterface::class)
-                                ->getMock();
-
-        $component = $this->getMockBuilder(ComponentInterface::class)
-                          ->getMock();
-
-        $this->container->method('getComponent')
-                        ->with('test')
-                        ->willReturn($component);
-        $this->container->method('getComponents')
-                        ->willReturn(['test' => $component]);
+        $this->container = new ComponentContainer();
 
         return parent::setUp();
     }

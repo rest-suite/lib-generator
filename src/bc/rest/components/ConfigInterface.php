@@ -4,12 +4,12 @@
 namespace bc\rest\components;
 
 /**
- * Interface ConfigClassInterface
+ * Interface ConfigInterface
  * Represents config file
  *
  * @package bc\rest\components
  */
-interface ConfigClassInterface extends ComponentInterface {
+interface ConfigInterface extends ComponentInterface {
 
     /**
      * Set config option value

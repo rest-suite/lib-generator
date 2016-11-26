@@ -81,7 +81,7 @@ class BaseGenerationTest extends Unit {
                   ->with('test')
                   ->willReturn($component);
 
-        /*$swagger = Yaml::parse(file_get_contents(__DIR__.'/../_data/simple.swagger.yml'));
+        /*$swagger = Yaml::parse(file_get_contents(__DIR__.'/../_data/swagger.yml'));
 
         $this->generator = new Generator($swagger, __DIR__.'/../_output/generated/');*/
 
