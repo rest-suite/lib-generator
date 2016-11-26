@@ -11,11 +11,11 @@ interface GeneratorInterface {
 
     /**
      * Get components container
-     * 
+     *
      * @return ComponentContainerInterface
      */
     public function getComponents();
-    
+
     /**
      * Add extension to generator pipeline
      * Only one extension per class
@@ -40,6 +40,20 @@ interface GeneratorInterface {
      * @param string $extension class name of extension
      */
     public function disableExtension($extension);
+
+    /**
+     * Get enabled extensions
+     *
+     * @return ExtensionInterface[]
+     */
+    public function getExtensions();
+
+    /**
+     * Get disabled extensions
+     *
+     * @return ExtensionInterface[]
+     */
+    public function getDisabledExtensions();
 
     /**
      * Run generation pipeline

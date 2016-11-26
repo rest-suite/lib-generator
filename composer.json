@@ -15,7 +15,9 @@
   ],
   "require": {
     "php": ">=5.6",
-    "gossi/php-code-generator": "~0"
+    "gossi/php-code-generator": "~0",
+    "gossi/swagger": "~0",
+    "symfony/yaml": "~3"
   },
   "require-dev": {
     "slim/slim": "3.*",
