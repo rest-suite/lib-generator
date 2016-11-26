@@ -61,4 +61,12 @@ interface ComponentInterface {
      */
     public function getFileExt();
 
+    /**
+     * Is component loaded?
+     * use for create default data (default result must be false)
+     * 
+     * @return bool
+     */
+    public function isLoaded();
+
 }
