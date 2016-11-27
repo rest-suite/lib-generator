@@ -28,7 +28,6 @@ class BootstrapClassTest extends Unit {
     public function testCreate() {
         $this->bootstrap->createDefaults();
         $this->assertEquals('Bootstrap', $this->bootstrap->getName());
-        $this->assertEmpty($this->bootstrap->getSuffix());
     }
 
     public function testLoad() {

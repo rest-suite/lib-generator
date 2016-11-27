@@ -12,8 +12,15 @@ use bc\rest\components\ClassInterface;
 interface ControllerClassInterface extends ClassInterface {
 
     /**
+     * Add new endpoint
+     *
+     * @param string $name                endpoint OperationId
+     * @param EndpointInterface $endpoint endpoint method
+     */
+    public function addEndpoint($name, EndpointInterface $endpoint);
+
+    /**
      * Get endpoint-method by name
-     * if endpoint not exists - create one
      *
      * @param string $name operationId form swagger.yml
      *
