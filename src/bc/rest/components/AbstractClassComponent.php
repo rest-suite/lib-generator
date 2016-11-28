@@ -3,8 +3,6 @@
 
 namespace bc\rest\components;
 
-
-use bc\rest\generator\CodegenRegistry;
 use gossi\codegen\model\PhpClass;
 use gossi\codegen\model\PhpMethod;
 use gossi\codegen\parser\FileParser;
@@ -15,8 +13,8 @@ use gossi\codegen\parser\visitor\PropertyParserVisitor;
 
 abstract class AbstractClassComponent extends PhpClass implements ClassInterface {
 
-    /** @var bool */
-    private $loaded = false;
+    use CodeTrait;
+
     /** @var string */
     private $fileExt = 'php';
 
@@ -100,13 +98,4 @@ abstract class AbstractClassComponent extends PhpClass implements ClassInterface
         $this->fileExt = $ext;
     }
 
-    /**
-     * Get class component code
-     */
-    public function getCode() {
-        $gen = CodegenRegistry::create('default', ['generateEmptyDocblock' => false]);
-
-        //sorry, hate tabs =)
-        return str_replace("\t", '    ', $gen->generate($this));
-    }
 }

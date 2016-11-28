@@ -27,7 +27,6 @@ class ComponentContainer implements ComponentContainerInterface {
      */
     public function addComponent($name, ComponentInterface $component) {
         if(isset($this->components[$name])) throw new Exception("Component $name exists");
-        if(!$component->isLoaded()) $component->createDefaults();
         $this->components[$name] = $component;
     }
 

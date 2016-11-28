@@ -14,10 +14,10 @@ interface ControllerClassInterface extends ClassInterface {
     /**
      * Add new endpoint
      *
-     * @param string $name                endpoint OperationId
      * @param EndpointInterface $endpoint endpoint method
+     *                                    name must be equals to operationId
      */
-    public function addEndpoint($name, EndpointInterface $endpoint);
+    public function addEndpoint(EndpointInterface $endpoint);
 
     /**
      * Get endpoint-method by name

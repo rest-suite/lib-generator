@@ -4,12 +4,16 @@ namespace bc\rest\tests;
 
 use bc\rest\components\controller\ControllerClassInterface;
 use bc\rest\components\controller\ControllerComponent;
+use bc\rest\components\controller\Endpoint;
+use bc\rest\components\controller\EndpointInterface;
 use Codeception\Test\Unit;
+use gossi\codegen\model\PhpMethod;
 
 class ControllerClassTest extends Unit {
 
     const CODE_PATH = __DIR__.'/../_data/simple/TestController.php';
     const PARTIAL_PATH = __DIR__.'/../_data/simple/TestPartialController.php';
+    const ENDPOINT_PATH = __DIR__.'/../_data/simple/TestEndpointController.php';
 
     /**
      * @var \bc\rest\tests\ComponentsTester
@@ -42,6 +46,25 @@ class ControllerClassTest extends Unit {
         $this->assertTrue($this->controller->hasProperty('ci'));
         $this->assertTrue($this->controller->hasMethod('__construct'));
         $this->assertContains('$this->ci = $ci;', $this->controller->getConstructor()->getBody());
+    }
+
+    public function testEndpoints() {
+        $this->controller->setName('TestController');
+        $this->controller->setFileExt('php');
+        $this->controller->setNamespace('test\\simple');
+        $this->controller->createDefaults();
+
+        $endpoint = new Endpoint('getItem');
+        $endpoint->setDescription('get item');
+
+        $this->controller->addEndpoint($endpoint);
+
+        $ep = $this->controller->getEndpoint('getItem');
+        $ep->addResponseTag('200', 'success');
+        $ep->setApiTag('GET', '/{id}');
+
+        $this->assertStringEqualsFile(self::ENDPOINT_PATH, "<?php\n\n".$this->controller->getCode(),
+                                      $this->controller->getCode());
     }
 
     protected function setUp() {

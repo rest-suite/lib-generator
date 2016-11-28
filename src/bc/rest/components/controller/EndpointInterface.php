@@ -11,7 +11,7 @@ use gossi\docblock\tags\AbstractTag;
  *
  * @package bc\rest\components\controller
  */
-interface EndpointInterface extends RoutineInterface, ComponentInterface {
+interface EndpointInterface extends RoutineInterface {
 
     /**
      * Shortcut to add phpdoc tag for responses from swagger
@@ -22,6 +22,15 @@ interface EndpointInterface extends RoutineInterface, ComponentInterface {
      * @param null $type          Optional type for response
      */
     public function addResponseTag($code = 'default', $description = '', $type = null);
+
+    /**
+     * Get tag for response by code
+     *
+     * @param string $code HTTP response code (swagger supports 'default' code as string)
+     *
+     * @return AbstractTag
+     */
+    public function getResponseTag($code);
 
     /**
      * Get all response tags
@@ -45,5 +54,10 @@ interface EndpointInterface extends RoutineInterface, ComponentInterface {
      * @return AbstractTag
      */
     public function getApiTag();
+
+    /**
+     * Update endpoint method if necessary
+     */
+    public function update();
 
 }

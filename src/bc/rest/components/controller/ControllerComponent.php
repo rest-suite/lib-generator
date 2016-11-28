@@ -6,10 +6,16 @@ namespace bc\rest\components\controller;
 
 use bc\rest\components\AbstractClassComponent;
 use bc\rest\exceptions\Exception;
+use gossi\codegen\model\PhpMethod;
 use gossi\codegen\model\PhpProperty;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class ControllerComponent extends AbstractClassComponent implements ControllerClassInterface {
 
+    /**
+     * @var EndpointInterface[]
+     */
     private $endpoints;
 
     /**
@@ -47,13 +53,11 @@ class ControllerComponent extends AbstractClassComponent implements ControllerCl
      * @throws Exception
      */
     public function getEndpoint($name) {
-        if(isset($this->endpoints[$name])) {
-            if(!($this->endpoints[$name] instanceof EndpointInterface)) {
-                throw new Exception('Invalid endpoint');
-            }
-            if(!$this->hasMethod($name)) $this->setMethod($this->endpoints[$name]);
-            
+        if(!isset($this->endpoints[$name]) && !$this->getMethod($name)) {
+            throw new Exception('Invalid endpoint');
         }
+
+        return $this->endpoints[$name];
     }
 
     /**
@@ -66,12 +70,21 @@ class ControllerComponent extends AbstractClassComponent implements ControllerCl
     }
 
     /**
-     * Add new endpoint
+     * @inheritdoc
      *
-     * @param string $name                endpoint OperationId
-     * @param EndpointInterface $endpoint endpoint method
+     * @throws Exception
      */
-    public function addEndpoint($name, EndpointInterface $endpoint) {
-        // TODO: Implement addEndpoint() method.
+    public function addEndpoint(EndpointInterface $endpoint) {
+        if(!($endpoint instanceof PhpMethod)) throw new Exception('Invalid endpoint');
+        $name = $endpoint->getName();
+        if(isset($this->endpoints[$name]) || $this->hasMethod($name)) {
+            throw new Exception('Endpoint exists');
+        }
+        $this->endpoints[$name] = $endpoint;
+        $this->setMethod($endpoint);
+        $endpoint->update();
+
+        $this->addUseStatement(Request::class);
+        $this->addUseStatement(Response::class);
     }
 }
