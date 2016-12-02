@@ -5,6 +5,7 @@ namespace bc\rest\components\controller;
 use bc\rest\components\ComponentInterface;
 use gossi\codegen\model\RoutineInterface;
 use gossi\docblock\tags\AbstractTag;
+use gossi\docblock\tags\UnknownTag;
 
 /**
  * Interface endpoint method
@@ -28,14 +29,14 @@ interface EndpointInterface extends RoutineInterface {
      *
      * @param string $code HTTP response code (swagger supports 'default' code as string)
      *
-     * @return AbstractTag
+     * @return UnknownTag
      */
     public function getResponseTag($code);
 
     /**
      * Get all response tags
      *
-     * @return AbstractTag[]
+     * @return UnknownTag[]
      */
     public function getResponseTags();
 
@@ -51,7 +52,7 @@ interface EndpointInterface extends RoutineInterface {
     /**
      * Get endpoint format tag
      *
-     * @return AbstractTag
+     * @return UnknownTag
      */
     public function getApiTag();
 

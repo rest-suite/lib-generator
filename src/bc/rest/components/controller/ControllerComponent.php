@@ -53,7 +53,7 @@ class ControllerComponent extends AbstractClassComponent implements ControllerCl
      * @throws Exception
      */
     public function getEndpoint($name) {
-        if(!isset($this->endpoints[$name]) && !$this->getMethod($name)) {
+        if(!isset($this->endpoints[$name])) {
             throw new Exception('Invalid endpoint');
         }
 

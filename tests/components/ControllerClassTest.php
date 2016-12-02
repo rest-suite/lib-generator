@@ -6,8 +6,10 @@ use bc\rest\components\controller\ControllerClassInterface;
 use bc\rest\components\controller\ControllerComponent;
 use bc\rest\components\controller\Endpoint;
 use bc\rest\components\controller\EndpointInterface;
+use bc\rest\exceptions\Exception;
 use Codeception\Test\Unit;
 use gossi\codegen\model\PhpMethod;
+use gossi\docblock\tags\UnknownTag;
 
 class ControllerClassTest extends Unit {
 
@@ -74,6 +76,49 @@ class ControllerClassTest extends Unit {
         $code = $this->controller->getCode();
 
         $this->assertStringEqualsFile(self::ENDPOINT_PATH, "<?php\n\n".$code, $code);
+
+        $this->assertEquals('@api-response 200 success', $ep->getResponseTag('200')->toString());
+        $this->assertCount(1, $ep->getResponseTags());
+        $this->assertEquals('@api GET /{id}', $ep->getApiTag()->toString());
+
+        /** @var UnknownTag $requestParamTag */
+        $requestParamTag = $ep->getRequestParameter('id')['tag'];
+        $this->assertEquals('@api-param int $id', $requestParamTag->toString());
+        $ep->setRequestParameter('id', ['description' => 'description']);
+        $requestParamTag = $ep->getRequestParameter('id')['tag'];
+        $this->assertEquals('@api-param int $id description', $requestParamTag->toString());
+
+        $this->assertEquals($endpoint, $this->controller->getEndpoint('getItem'));
+        $this->assertCount(1, $this->controller->getEndpoints());
+        $this->assertEquals('php', $this->controller->getFileExt());
+        
+        $ep->removeParameter('response');
+        $this->assertStringEqualsFile(self::ENDPOINT_PATH, "<?php\n\n".$this->controller->getCode());
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testNonExistsEndpoint() {
+        $this->controller->getEndpoint('non exists');
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testAddExistsEndpoint() {
+        $ep = new Endpoint('test');
+        $this->controller->addEndpoint($ep);
+        $this->controller->addEndpoint($ep);
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testAddExistsMethodEndpoint() {
+        $this->controller->setMethod(PhpMethod::create('test'));
+        $ep = new Endpoint('test');
+        $this->controller->addEndpoint($ep);
     }
 
     protected function setUp() {

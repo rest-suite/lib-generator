@@ -8,19 +8,18 @@ use bc\rest\exceptions\Exception;
 use gossi\codegen\model\PhpMethod;
 use gossi\codegen\model\PhpParameter;
 use gossi\docblock\Docblock;
-use gossi\docblock\tags\AbstractTag;
 use gossi\docblock\tags\TagFactory;
 use gossi\docblock\tags\UnknownTag;
 
 class Endpoint extends PhpMethod implements EndpointInterface {
 
     /**
-     * @var AbstractTag
+     * @var UnknownTag
      */
     private $apiTag;
 
     /**
-     * @var AbstractTag[]
+     * @var UnknownTag[]
      */
     private $responseTags = [];
 
@@ -54,7 +53,7 @@ class Endpoint extends PhpMethod implements EndpointInterface {
     /**
      * Get all response tags
      *
-     * @return AbstractTag[]
+     * @return UnknownTag[]
      */
     public function getResponseTags() {
         return $this->responseTags;
@@ -65,7 +64,7 @@ class Endpoint extends PhpMethod implements EndpointInterface {
      *
      * @param string $code HTTP response code (swagger supports 'default' code as string)
      *
-     * @return AbstractTag
+     * @return UnknownTag
      *
      * @throws Exception
      */
@@ -78,7 +77,7 @@ class Endpoint extends PhpMethod implements EndpointInterface {
     /**
      * Get endpoint format tag
      *
-     * @return AbstractTag
+     * @return UnknownTag
      */
     public function getApiTag() {
         return $this->apiTag;
@@ -173,16 +172,14 @@ class Endpoint extends PhpMethod implements EndpointInterface {
      */
     public function setRequestParameter($name, $options = []) {
         if(isset($this->requestParams[$name])) {
-            $this->requestParams[$name] = array_merge($this->requestParams, $options);
+            $this->requestParams[$name] = array_merge($this->requestParams[$name], $options);
         }
         else {
             $this->requestParams[$name] = $options;
         }
 
-        $options = $this->requestParams[$name];
-
-        $type = isset($options['type']) ? $options['type'].' ' : '';
-        $description = isset($options['description']) ? ' '.$options['description'] : '';
+        $type = isset($this->requestParams[$name]['type']) ? $this->requestParams[$name]['type'].' ' : '';
+        $description = isset($this->requestParams[$name]['description']) ? ' '.$this->requestParams[$name]['description'] : '';
         $tagContent = sprintf('%s$%s%s', $type, $name, $description);
         $this->requestParams[$name]['tag'] = TagFactory::create('api-param', trim($tagContent));
     }
