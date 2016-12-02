@@ -11,6 +11,8 @@ trait CodeTrait {
 
     /**
      * Get component code
+     *
+     * @return string
      */
     public function getCode() {
         $gen = CodegenRegistry::create('default', ['generateEmptyDocblock' => false]);

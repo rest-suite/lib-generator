@@ -60,11 +60,20 @@ class ControllerClassTest extends Unit {
         $this->controller->addEndpoint($endpoint);
 
         $ep = $this->controller->getEndpoint('getItem');
-        $ep->addResponseTag('200', 'success');
         $ep->setApiTag('GET', '/{id}');
+        $ep->addResponseTag('200', 'success');
+        $ep->setRequestParameter('id',
+                                 [
+                                     'type' => 'int',
+                                     'init' => [
+                                         "/** @var int \$id */",
+                                         "\$id = isset(\$args['id']) ? \$args['id'] : null;",
+                                     ],
+                                 ]);
 
-        $this->assertStringEqualsFile(self::ENDPOINT_PATH, "<?php\n\n".$this->controller->getCode(),
-                                      $this->controller->getCode());
+        $code = $this->controller->getCode();
+
+        $this->assertStringEqualsFile(self::ENDPOINT_PATH, "<?php\n\n".$code, $code);
     }
 
     protected function setUp() {

@@ -10,6 +10,7 @@ use gossi\codegen\model\PhpParameter;
 use gossi\docblock\Docblock;
 use gossi\docblock\tags\AbstractTag;
 use gossi\docblock\tags\TagFactory;
+use gossi\docblock\tags\UnknownTag;
 
 class Endpoint extends PhpMethod implements EndpointInterface {
 
@@ -22,6 +23,11 @@ class Endpoint extends PhpMethod implements EndpointInterface {
      * @var AbstractTag[]
      */
     private $responseTags = [];
+
+    /**
+     * @var array[]
+     */
+    private $requestParams = [];
 
     /**
      * Shortcut to add phpdoc tag for responses from swagger
@@ -41,8 +47,8 @@ class Endpoint extends PhpMethod implements EndpointInterface {
 
         $this->responseTags[$code] = TagFactory::create('api-response', $msg);
         /** @var Docblock $doc */
-        $doc = $this->getDocblock();
-        $doc->appendTag($this->responseTags[$code]);
+        /*$doc = $this->getDocblock();
+        $doc->appendTag($this->responseTags[$code]);*/
     }
 
     /**
@@ -90,10 +96,6 @@ class Endpoint extends PhpMethod implements EndpointInterface {
     public function setApiTag($method, $pattern) {
         if(!is_null($this->apiTag)) throw new Exception('api tag already set. use getApiTag instead');
         $this->apiTag = TagFactory::create('api', sprintf("%s %s", $method, $pattern));
-
-        /** @var Docblock $doc */
-        $doc = $this->getDocblock();
-        $doc->appendTag($this->apiTag);
     }
 
     /**
@@ -120,11 +122,82 @@ class Endpoint extends PhpMethod implements EndpointInterface {
         }
 
         if($this->getType() != 'Response') $this->setType('Response');
+
+        $this->updateDocTags();
+
     }
 
     private function createParams() {
         $this->addSimpleParameter('request', 'Request');
         $this->addSimpleParameter('response', 'Response');
         $this->addParameter(PhpParameter::create('args')->setType('array')->setExpression('[]'));
+    }
+
+    private function updateDocTags() {
+        /** @var Docblock $doc */
+        $doc = $this->getDocblock();
+
+        if(!is_null($this->apiTag)) {
+            $doc->removeTags('api');
+            $doc->appendTag($this->apiTag);
+        }
+
+        if(count($this->requestParams) > 0) {
+            $oldBody = $this->getBody();
+            $doc->removeTags('api-param');
+            $initCode = [];
+            foreach($this->requestParams as $name => $param) {
+                if(isset($param['tag'])) $doc->appendTag($param['tag']);
+                if(isset($param['init']) && strpos($oldBody, '$'.$name) === false) {
+                    $initCode = array_merge($initCode, $param['init']);
+                }
+            }
+            $initCode[] = "\n";
+            $this->setBody(join("\n", $initCode).$oldBody);
+        }
+
+        if(count($this->responseTags) > 0) {
+            $doc->removeTags('api-response');
+            foreach($this->responseTags as $tag) {
+                $doc->appendTag($tag);
+            }
+        }
+    }
+
+    /**
+     * Add request parameter to endpoint
+     * Update options if named param exists
+     *
+     * @param string $name   param name
+     * @param array $options endpoint specific options
+     */
+    public function setRequestParameter($name, $options = []) {
+        if(isset($this->requestParams[$name])) {
+            $this->requestParams[$name] = array_merge($this->requestParams, $options);
+        }
+        else {
+            $this->requestParams[$name] = $options;
+        }
+
+        $options = $this->requestParams[$name];
+
+        $type = isset($options['type']) ? $options['type'].' ' : '';
+        $description = isset($options['description']) ? ' '.$options['description'] : '';
+        $tagContent = sprintf('%s$%s%s', $type, $name, $description);
+        $this->requestParams[$name]['tag'] = TagFactory::create('api-param', trim($tagContent));
+    }
+
+    /**
+     * Get request parameter of endpoint
+     *
+     * @param string $name
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function getRequestParameter($name) {
+        if(!isset($this->requestParams[$name])) throw new Exception('Request param not exists');
+
+        return $this->requestParams[$name];
     }
 }

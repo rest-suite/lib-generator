@@ -66,7 +66,20 @@ class ControllerComponent extends AbstractClassComponent implements ControllerCl
      * @return EndpointInterface[]
      */
     public function getEndpoints() {
-        // TODO: Implement getEndpoints() method.
+        return $this->endpoints;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode() {
+        if(count($this->endpoints) > 0) {
+            foreach($this->endpoints as $endpoint) {
+                $endpoint->update();
+            }
+        }
+
+        return parent::getCode();
     }
 
     /**

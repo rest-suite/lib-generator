@@ -60,4 +60,22 @@ interface EndpointInterface extends RoutineInterface {
      */
     public function update();
 
+    /**
+     * Add request parameter to endpoint
+     * Update options if named param exists
+     *
+     * @param string $name   param name
+     * @param array $options endpoint specific options
+     */
+    public function setRequestParameter($name, $options = []);
+
+    /**
+     * Get request parameter of endpoint
+     *
+     * @param string $name
+     *
+     * @return array
+     */
+    public function getRequestParameter($name);
+
 }
