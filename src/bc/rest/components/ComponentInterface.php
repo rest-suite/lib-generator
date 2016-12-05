@@ -24,21 +24,6 @@ interface ComponentInterface {
     public function setName($name);
 
     /**
-     * Get suffix for component full name
-     * can be empty
-     *
-     * @return string
-     */
-    public function getSuffix();
-
-    /**
-     * Set component suffix
-     *
-     * @param string $suffix
-     */
-    public function setSuffix($suffix);
-
-    /**
      * Generate component with default data
      *
      * @param array $parts   custom names of parts to generate
@@ -48,8 +33,6 @@ interface ComponentInterface {
      *                       value - mixed. if no named-key - name of part
      *
      * @param array $options options for default data generation
-     *
-     * @return
      */
     public function createDefaults($parts = [], $options = []);
 
@@ -65,8 +48,6 @@ interface ComponentInterface {
      *                         value - mixed. if no named-key - name of part
      *
      * @param array $options   options for loading
-     *
-     * @return
      */
     public function loadFromFile($filename, $parts = [], $options = []);
 
@@ -91,13 +72,5 @@ interface ComponentInterface {
      * @param string $ext extension
      */
     public function setFileExt($ext);
-
-    /**
-     * Is component loaded?
-     * use for create default data (default result must be false)
-     *
-     * @return bool
-     */
-    public function isLoaded();
 
 }
