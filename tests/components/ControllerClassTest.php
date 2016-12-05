@@ -91,9 +91,10 @@ class ControllerClassTest extends Unit {
         $this->assertEquals($endpoint, $this->controller->getEndpoint('getItem'));
         $this->assertCount(1, $this->controller->getEndpoints());
         $this->assertEquals('php', $this->controller->getFileExt());
-        
+
         $ep->removeParameter('response');
-        $this->assertStringEqualsFile(self::ENDPOINT_PATH, "<?php\n\n".$this->controller->getCode());
+        $ep->update();
+        $this->assertEquals('Response', $ep->getParameter('response')->getType());
     }
 
     /**

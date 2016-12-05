@@ -3,6 +3,7 @@ namespace bc\rest\tests;
 
 
 use bc\rest\components\BootstrapClassInterface;
+use bc\rest\components\BootstrapComponent;
 use Codeception\Test\Unit;
 
 class BootstrapClassTest extends Unit {
@@ -15,32 +16,30 @@ class BootstrapClassTest extends Unit {
     protected $tester;
 
     /**
-     * @var BootstrapClassInterface
+     * @var BootstrapComponent
      */
     private $bootstrap;
 
-    /**
-     * @var string
-     */
-    private $code;
-
     // tests
-    public function testCreate() {
+    public function testCreateEmpty() {
         $this->bootstrap->createDefaults();
-        $this->assertEquals('Bootstrap', $this->bootstrap->getName());
+        $this->bootstrap->setNamespace('test\\simple');
+
+        $this->assertEquals(BootstrapComponent::METHOD_PROCESS_REQUEST, $this->bootstrap->getErrorProcessing()->getName());
+
+        $code = $this->bootstrap->getCode();
+        $this->assertStringEqualsFile(self::CODE_PATH, "<?php\n\n".$code, $code);
     }
 
     public function testLoad() {
         $this->bootstrap->loadFromFile(self::CODE_PATH);
-        $this->assertEquals($this->code, $this->bootstrap->getCode());
+        $code = $this->bootstrap->getCode();
+        $this->assertStringEqualsFile(self::CODE_PATH, "<?php\n\n".$code, $code);
     }
 
     protected function setUp() {
-        $this->code = file_get_contents(self::CODE_PATH);
 
-        $this->bootstrap = $this->createMock(BootstrapClassInterface::class);
-        $this->bootstrap->method('getName')->willReturn('Bootstrap');
-        $this->bootstrap->method('getCode')->willReturn($this->code);
+        $this->bootstrap = new BootstrapComponent();
 
         return parent::setUp();
     }

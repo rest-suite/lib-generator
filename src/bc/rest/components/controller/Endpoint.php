@@ -13,6 +13,12 @@ use gossi\docblock\tags\UnknownTag;
 
 class Endpoint extends PhpMethod implements EndpointInterface {
 
+    const TAG_API_RESPONSE = 'api-response';
+    const TAG_API = 'api';
+    const TAG_API_PARAM = 'api-param';
+    const TYPE_RESPONSE = 'Response';
+    const TYPE_REQUEST = 'Request';
+
     /**
      * @var UnknownTag
      */
@@ -44,7 +50,7 @@ class Endpoint extends PhpMethod implements EndpointInterface {
         if(!empty($type)) $msg .= " $type";
         if(!empty($description)) $msg .= " $description";
 
-        $this->responseTags[$code] = TagFactory::create('api-response', $msg);
+        $this->responseTags[$code] = TagFactory::create(self::TAG_API_RESPONSE, $msg);
         /** @var Docblock $doc */
         /*$doc = $this->getDocblock();
         $doc->appendTag($this->responseTags[$code]);*/
@@ -94,19 +100,26 @@ class Endpoint extends PhpMethod implements EndpointInterface {
      */
     public function setApiTag($method, $pattern) {
         if(!is_null($this->apiTag)) throw new Exception('api tag already set. use getApiTag instead');
-        $this->apiTag = TagFactory::create('api', sprintf("%s %s", $method, $pattern));
+        $this->apiTag = TagFactory::create(self::TAG_API, sprintf("%s %s", $method, $pattern));
     }
 
     /**
      * Update endpoint method if necessary
      */
     public function update() {
+        $this->updateParams();
+        $this->updateDefaultBody();
+        $this->updateDocTags();
+
+    }
+
+    private function updateParams() {
         /** @var PhpParameter[] $params */
         $params = $this->getParameters();
         if(
             count($params) != 3
-            || $params[0]->getName() != 'request'
-            || $params[1]->getName() != 'response'
+            || $params[0]->getName() != strtolower(self::TYPE_REQUEST)
+            || $params[1]->getName() != strtolower(self::TYPE_RESPONSE)
             || $params[2]->getName() != 'args'
         ) {
             foreach($params as $param) {
@@ -115,35 +128,48 @@ class Endpoint extends PhpMethod implements EndpointInterface {
 
             $this->createParams();
         }
-
-        if(empty($this->getBody())) {
-            $this->setBody("return \$response->withStatus(501, '{$this->getName()} not implemented');");
-        }
-
-        if($this->getType() != 'Response') $this->setType('Response');
-
-        $this->updateDocTags();
-
     }
 
     private function createParams() {
-        $this->addSimpleParameter('request', 'Request');
-        $this->addSimpleParameter('response', 'Response');
+        $this->addSimpleParameter(strtolower(self::TYPE_REQUEST), self::TYPE_REQUEST);
+        $this->addSimpleParameter(strtolower(self::TYPE_RESPONSE), self::TYPE_RESPONSE);
         $this->addParameter(PhpParameter::create('args')->setType('array')->setExpression('[]'));
     }
 
+    private function updateDefaultBody() {
+        if(empty($this->getBody())) {
+            $this->setBody("return \$response->withStatus(501, '{$this->getName()} not implemented');");
+        }
+    }
+
     private function updateDocTags() {
+        if($this->getType() != self::TYPE_RESPONSE) $this->setType(self::TYPE_RESPONSE);
+
         /** @var Docblock $doc */
         $doc = $this->getDocblock();
 
+        $this->updateApiTag($doc);
+        $this->updateRequestParamsTags($doc);
+        $this->updateResponseTags($doc);
+    }
+
+    /**
+     * @param Docblock $doc
+     */
+    private function updateApiTag($doc) {
         if(!is_null($this->apiTag)) {
-            $doc->removeTags('api');
+            $doc->removeTags(self::TAG_API);
             $doc->appendTag($this->apiTag);
         }
+    }
 
+    /**
+     * @param Docblock $doc
+     */
+    private function updateRequestParamsTags($doc) {
         if(count($this->requestParams) > 0) {
             $oldBody = $this->getBody();
-            $doc->removeTags('api-param');
+            $doc->removeTags(self::TAG_API_PARAM);
             $initCode = [];
             foreach($this->requestParams as $name => $param) {
                 if(isset($param['tag'])) $doc->appendTag($param['tag']);
@@ -154,9 +180,14 @@ class Endpoint extends PhpMethod implements EndpointInterface {
             $initCode[] = "\n";
             $this->setBody(join("\n", $initCode).$oldBody);
         }
+    }
 
+    /**
+     * @param Docblock $doc
+     */
+    private function updateResponseTags($doc) {
         if(count($this->responseTags) > 0) {
-            $doc->removeTags('api-response');
+            $doc->removeTags(self::TAG_API_RESPONSE);
             foreach($this->responseTags as $tag) {
                 $doc->appendTag($tag);
             }
@@ -181,7 +212,7 @@ class Endpoint extends PhpMethod implements EndpointInterface {
         $type = isset($this->requestParams[$name]['type']) ? $this->requestParams[$name]['type'].' ' : '';
         $description = isset($this->requestParams[$name]['description']) ? ' '.$this->requestParams[$name]['description'] : '';
         $tagContent = sprintf('%s$%s%s', $type, $name, $description);
-        $this->requestParams[$name]['tag'] = TagFactory::create('api-param', trim($tagContent));
+        $this->requestParams[$name]['tag'] = TagFactory::create(self::TAG_API_PARAM, trim($tagContent));
     }
 
     /**
